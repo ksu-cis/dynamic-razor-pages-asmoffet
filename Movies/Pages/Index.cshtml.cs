@@ -50,12 +50,47 @@ namespace Movies.Pages
         public void OnGet(double? IMDBMin, double? IMDBMax)
         {
             // Nullable conversion workaround
+            /*
             this.IMDBMin = IMDBMin;
             this.IMDBMax = IMDBMax;
             Movies = MovieDatabase.Search(SearchTerms);
             Movies = MovieDatabase.FilterByMPAARating(Movies, MPAARatings);
             Movies = MovieDatabase.FilterByGenre(Movies, Genres);
             Movies = MovieDatabase.FilterByIMDBRating(Movies, IMDBMin, IMDBMax);
+            */
+
+            Movies = MovieDatabase.All;
+            //search movie titles for the SearchTerms
+            if(SearchTerms != null)
+            {
+                Movies = Movies.Where(movie => movie.Title != null && movie.Title.Contains(SearchTerms, StringComparison.InvariantCultureIgnoreCase));
+            }
+            //Filter by MPAA rating
+            if(MPAARatings != null && MPAARatings.Length != 0)
+            {
+                Movies = Movies.Where(movie => movie.MPAARating != null && MPAARatings.Contains(movie.MPAARating));
+            }
+            //Filter by Genres
+            if(Genres != null && Genres.Length != 0)
+            {
+                Movies = Movies.Where(movie => movie.MajorGenre != null && Genres.Contains(movie.MajorGenre));
+            }
+            //filter by price neither not null
+            if(IMDBMax != null && IMDBMin != null)
+            {
+                Movies = Movies.Where(movie => movie.IMDBRating <= IMDBMax && movie.IMDBRating >= IMDBMin);
+            }
+            //Filter by Price max not null
+            else if(IMDBMax != null)
+            {
+                Movies = Movies.Where(movie => movie.IMDBRating <= IMDBMax);
+            }
+            //filter by price min not null
+            else if(IMDBMin != null)
+            {
+                Movies = Movies.Where(movie => movie.IMDBRating <= IMDBMin);
+            }
+
         }
 
     }
